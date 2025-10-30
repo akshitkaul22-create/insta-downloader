@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>इंस्टा डाउनलोडर - फ्री वीडियो डाउनलोड</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      text-align: center;
+      padding: 40px 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #E4405F;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+    p {
+      margin-bottom: 20px;
+      color: #555;
+    }
+    input {
+      width: 100%;
+      padding: 15px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    button {
+      background: #E4405F;
+      color: white;
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #c13554;
+    }
+    #result {
+      margin-top: 30px;
+    }
+    video {
+      max-width: 100%;
+      border-radius: 10px;
+      margin: 15px 0;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .download-btn {
+      display: inline-block;
+      background: #25D366;
+      color: white;
+      padding: 12px 25px;
+      text-decoration: none;
+      border-radius: 10px;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .footer {
+      margin-top: 50px;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>इंस्टा वीडियो डाउनलोडर</h1>
+    <p>Instagram रील, वीडियो या फोटो का लिंक पेस्ट करें और डाउनलोड करें!</p>
+    
+    <input type="text" id="link" placeholder="https://www.instagram.com/p/..." />
+    <br>
+    <button onclick="downloadVideo()">वीडियो डाउनलोड करें</button>
+
+    <div id="result"></div>
+  </div>
+
+  <div class="footer">
+    <p>Personal use only • Copyright का सम्मान करें</p>
+  </div>
+
+  <script>
+    function downloadVideo() {
+      const url = document.getElementById('link').value.trim();
+      const result = document.getElementById('result');
+
+      if (!url.includes('instagram.com')) {
+        result.innerHTML = `<p style="color:red;">❌ गलत लिंक! Instagram का लिंक डालें।</p>`;
+        return;
+      }
+
+      result.innerHTML = `<p>🔄 प्रोसेसिंग हो रही है... थोड़ा इंतज़ार करें...</p>`;
+
+      // फ्री API यूज़ कर रहे हैं
+      const apiUrl = `https://instagram-downloader-api.vercel.app/api/download?url=${encodeURIComponent(url)}`;
+
+      fetch(apiUrl)
+        .then(res => res.json())
+        .then(data => {
+          if (data.video_url) {
+            result.innerHTML = `
+              <video controls src="${data.video_url}"></video><br>
+              <a href="${data.video_url}" download class="download-btn">⬇️ डाउनलोड करें (MP4)</a>
+            `;
+          } else if (data.image_url) {
+            result.innerHTML = `
+              <img src="${data.image_url}" style="max-width:100%; border-radius:10px;"><br>
+              <a href="${data.image_url}" download class="download-btn">⬇️ फोटो डाउनलोड करें</a>
+            `;
+          } else {
+            result.innerHTML = `<p style="color:red;">❌ वीडियो नहीं मिला। Public पोस्ट ट्राई करें।</p>`;
+          }
+        })
+        .catch(err => {
+          result.innerHTML = `<p style="color:red;">❌ एरर! फिर से ट्राई करें।</p>`;
+        });
+    }
+  </script>
+
+</body>
+</html>
